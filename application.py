@@ -1,4 +1,5 @@
 from wsgiref.simple_server import make_server
+import requests
 
 welcome = """
 <!DOCTYPE html>
@@ -7,7 +8,7 @@ welcome = """
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Welcome</title>
   <style>
-  body {
+  body {{
     color: #ffffff;
     background-color: #E0E0E0;
     font-family: Arial, sans-serif;
@@ -17,21 +18,21 @@ welcome = """
     -webkit-transition-property: text-shadow;
     -webkit-transition-duration: 4s;
     text-shadow: none;
-  }
-  body.blurry {
+  }}
+  body.blurry {{
     -moz-transition-property: text-shadow;
     -moz-transition-duration: 4s;
     -webkit-transition-property: text-shadow;
     -webkit-transition-duration: 4s;
     text-shadow: #fff 0px 0px 25px;
-  }
-  a {
+  }}
+  a {{
     color: #0188cc;
-  }
-  .textColumn, .linksColumn {
+  }}
+  .textColumn, .linksColumn {{
     padding: 2em;
-  }
-  .textColumn {
+  }}
+  .textColumn {{
     position: absolute;
     top: 0px;
     right: 50%;
@@ -43,12 +44,12 @@ welcome = """
     background-color: #1BA86D;
     background-image: -moz-radial-gradient(left top, circle, #6AF9BD 0%, #00B386 60%);
     background-image: -webkit-gradient(radial, 0 0, 1, 0 0, 500, from(#6AF9BD), to(#00B386));
-  }
-  .textColumn p {
+  }}
+  .textColumn p {{
     width: 75%;
     float:right;
-  }
-  .linksColumn {
+  }}
+  .linksColumn {{
     position: absolute;
     top:0px;
     right: 0px;
@@ -56,31 +57,31 @@ welcome = """
     left: 50%;
 
     background-color: #E0E0E0;
-  }
+  }}
 
-  h1 {
+  h1 {{
     font-size: 500%;
     font-weight: normal;
     margin-bottom: 0em;
-  }
-  h2 {
+  }}
+  h2 {{
     font-size: 200%;
     font-weight: normal;
     margin-bottom: 0em;
-  }
-  ul {
+  }}
+  ul {{
     padding-left: 1em;
     margin: 0px;
-  }
-  li {
+  }}
+  li {{
     margin: 1em 0em;
-  }
+  }}
   </style>
 </head>
 <body id="sample">
   <div class="textColumn">
     <h1>Congratulations</h1>
-    <p>Your first AWS Elastic Beanstalk Python Application is now running on your own dedicated environment in the AWS Cloud</p>
+    <p>Temperature in Brighton {TEMP}</p>
   </div>
   
   <div class="linksColumn"> 
@@ -115,12 +116,16 @@ def application(environ, start_response):
     #     response = ''
     # else:
     #     response = welcome
-    response = welcome
+    r = requests.get('https://api.openweathermap.org/data/2.5/weather?q=Brighton&APPID=8d34ccb1d21edc4f78f552845e027e56&units=metric')
+    weatherData = r.json()
+    temp = str(weatherData['main']['temp'])
+
+    response = welcome.format(TEMP=temp)
     status = '200 OK'
     headers = [('Content-type', 'text/html')]
 
     start_response(status, headers)
-    return [response]
+    return [response.encode("utf-8")]
 
 
 if __name__ == '__main__':
