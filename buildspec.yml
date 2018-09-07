@@ -4,7 +4,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Compiling the Python code...
+      - echo Testing the Python code...
       - python HelloWorld_test.py
   post_build:
     commands:
